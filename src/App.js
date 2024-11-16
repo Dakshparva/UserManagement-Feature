@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import SideMenu from './components/SideMenu';
+import UserForm from './components/UserForm';
+import UserList from './components/UserList';
+import Dashboard from './components/Dashboard';
+import { Provider } from 'react-redux';
+import store from './Redux/store';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => (
+  <Provider store={store}>
+    <Router>
+      <div style={{ display: 'flex' }}>
+        <SideMenu />
+        <div style={{ flex: 1, padding: '20px' }}>
+          <Routes>
+            <Route path="/add-user" element={<UserForm />} />
+            <Route path="/user-list" element={<UserList />} />
+            <Route path="/dashboard" exact element={<Dashboard />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
+  </Provider>
+);
 
 export default App;
