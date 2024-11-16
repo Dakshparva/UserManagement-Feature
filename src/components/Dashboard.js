@@ -15,6 +15,8 @@ const Dashboard = () => {
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
+          color: "#ffffff",
+          background: "linear-gradient(to right, #4caf50, #3f51b5)",
         }}
         variant="h4"
       >
@@ -84,13 +86,26 @@ const Dashboard = () => {
   );
 
   return (
-    <div style={{ backgroundColor: "#f0f4f8", minHeight: "100vh" }}>
+    <div
+      style={{
+        backgroundImage:
+          "url('https://source.unsplash.com/featured/?technology,abstract')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh",
+        padding: "20px",
+      }}
+    >
       <Box padding={4}>
         <Typography
           variant="h3"
           align="center"
           gutterBottom
-          sx={{ color: "#333", fontWeight: 700 }}
+          sx={{
+            color: "#ffffff",
+            fontWeight: 700,
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+          }}
         >
           Dashboard
         </Typography>
@@ -101,7 +116,8 @@ const Dashboard = () => {
             padding: 4,
             borderRadius: "20px",
             mb: 5,
-            backgroundColor: "#ffffff",
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.3)",
           }}
         >
           <Typography variant="h4" align="center" sx={{ mb: 3 }}>
@@ -136,7 +152,8 @@ const Dashboard = () => {
           sx={{
             padding: 4,
             borderRadius: "20px",
-            backgroundColor: "#ffffff",
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.3)",
           }}
         >
           <Typography variant="h4" align="center" sx={{ mb: 3 }}>

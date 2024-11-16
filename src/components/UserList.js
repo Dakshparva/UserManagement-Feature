@@ -20,8 +20,8 @@ import {
   TextField,
   Box,
   Typography,
-  Grid,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import UserForm from "./UserForm";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -98,6 +98,7 @@ const UserList = () => {
   const renderRow = (user, index) => (
     <Grow in={true} timeout={500 + index * 100} key={index}>
       <TableRow hover>
+        <TableCell>{index + 1}</TableCell>
         <TableCell>{user.firstName}</TableCell>
         <TableCell>{user.lastName}</TableCell>
         <TableCell>{user.age}</TableCell>
@@ -130,7 +131,18 @@ const UserList = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Button
+      
+
+      <Box sx={{ marginBottom: 2,display:"flex",justifyContent:"space-between",marginRight:"30px" }}>
+        <TextField
+          label="Search Users"
+          variant="outlined"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          fullWidth
+          sx={{ maxWidth: 500, margin: "0 auto", display: "block" }}
+        />
+        <Button
         variant="contained"
         color="primary"
         onClick={() => handleOpenForm()}
@@ -145,22 +157,23 @@ const UserList = () => {
         initialData={selectedUser}
         isEditing={isEditing}
       />
-
-      <Box sx={{ marginBottom: 2 }}>
-        <TextField
-          label="Search Users"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          fullWidth
-          sx={{ maxWidth: 500, margin: "0 auto", display: "block" }}
-        />
       </Box>
 
       <TableContainer component={Paper} elevation={3} sx={{ maxHeight: 400 }}>
         <Table stickyHeader>
-          <TableHead>
+          <TableHead
+            sx={{
+              background: "lightblue",
+              "& .MuiTableCell-root": {
+                color: "black",
+                fontWeight: "bold",
+                fontSize: "1rem",
+                textTransform: "uppercase",
+              },
+            }}
+          >
             <TableRow>
+              <TableCell>ID</TableCell>
               <TableCell>First Name</TableCell>
               <TableCell>Last Name</TableCell>
               <TableCell>Age</TableCell>
@@ -168,6 +181,7 @@ const UserList = () => {
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {paginatedUsers.map((user, index) => renderRow(user, index))}
           </TableBody>
@@ -355,9 +369,8 @@ const UserList = () => {
                     }}
                   />
                 </Grid>
-
-                <Grid item xs={12}>
-                  <Typography
+              </Grid>
+              <Typography
                     variant="body1"
                     sx={{ fontSize: "1rem", marginBottom: "5px" }}
                   >
@@ -375,8 +388,6 @@ const UserList = () => {
                       style: { backgroundColor: "#e0e0e0" },
                     }}
                   />
-                </Grid>
-              </Grid>
             </Box>
           </Grow>
         </DialogContent>
