@@ -130,9 +130,7 @@ const UserList = () => {
   );
 
   return (
-    <Box sx={{ padding: 2 }}>
-      
-
+    <Box sx={{ padding: 2}}>
       <Box sx={{ marginBottom: 2,display:"flex",justifyContent:"space-between",marginRight:"30px" }}>
         <TextField
           label="Search Users"

@@ -15,8 +15,6 @@ const Dashboard = () => {
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
-          color: "#ffffff",
-          background: "linear-gradient(to right, #4caf50, #3f51b5)",
         }}
         variant="h4"
       >
