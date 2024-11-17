@@ -26,6 +26,8 @@ import UserForm from "./UserForm";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const UserList = () => {
   const users = useSelector((state) => state.users);
@@ -37,12 +39,18 @@ const UserList = () => {
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [emailToConfirm, setEmailToConfirm] = useState("");
   const [search, setSearch] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
   const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const rowsPerPage = 5;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const handleSearch = users.filter((user) => {
@@ -55,6 +63,29 @@ const UserList = () => {
     );
   });
 
+  const sortedUsers = [...handleSearch].sort((a, b) => {
+    if (sortConfig.direction === "asc") {
+      return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
+    } else {
+      return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
+    }
+  });
+
+  const paginatedUsers = sortedUsers.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const handleSort = (key) => {
+    setSortConfig((prevConfig) => ({
+      key,
+      direction:
+        prevConfig.key === key && prevConfig.direction === "asc"
+          ? "desc"
+          : "asc",
+    }));
+  };
+
   const handleOpenForm = (user = null) => {
     setSelectedUser(user || {});
     setIsEditing(!!user);
@@ -62,7 +93,6 @@ const UserList = () => {
   };
 
   const handleSaveUser = (user) => {
-    console.log(user);
     if (isEditing) {
       dispatch(editUser(user));
     } else {
@@ -95,43 +125,48 @@ const UserList = () => {
     setOpenDetailsDialog(true);
   };
 
-  const renderRow = (user, index) => (
-    <Grow in={true} timeout={500 + index * 100} key={index}>
-      <TableRow hover>
-        <TableCell>{index + 1}</TableCell>
-        <TableCell>{user.firstName}</TableCell>
-        <TableCell>{user.lastName}</TableCell>
-        <TableCell>{user.age}</TableCell>
-        <TableCell>{user.email}</TableCell>
-        <TableCell>
-          <IconButton
-            color="primary"
-            onClick={() => handleOpenDetailsDialog(user)}
-          >
-            <VisibilityIcon />
-          </IconButton>
-          <IconButton color="primary" onClick={() => handleOpenForm(user)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            color="error"
-            onClick={() => handleOpenDeleteDialog(user.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </TableCell>
-      </TableRow>
-    </Grow>
-  );
-
-  const paginatedUsers = handleSearch.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const renderRow = (user, index) => {
+    const currentIndex = page * rowsPerPage + index + 1;
+    return (
+      <Grow in={true} timeout={500 + index * 100} key={index}>
+        <TableRow hover>
+          <TableCell>{currentIndex}</TableCell>
+          <TableCell>{user.firstName}</TableCell>
+          <TableCell>{user.lastName}</TableCell>
+          <TableCell>{user.age}</TableCell>
+          <TableCell>{user.email}</TableCell>
+          <TableCell>
+            <IconButton
+              color="primary"
+              onClick={() => handleOpenDetailsDialog(user)}
+            >
+              <VisibilityIcon />
+            </IconButton>
+            <IconButton color="primary" onClick={() => handleOpenForm(user)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              color="error"
+              onClick={() => handleOpenDeleteDialog(user.id)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </TableCell>
+        </TableRow>
+      </Grow>
+    );
+  };
 
   return (
-    <Box sx={{ padding: 2}}>
-      <Box sx={{ marginBottom: 2,display:"flex",justifyContent:"space-between",marginRight:"30px" }}>
+    <Box sx={{ padding: 2 }}>
+      <Box
+        sx={{
+          marginBottom: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          marginRight: "30px",
+        }}
+      >
         <TextField
           label="Search Users"
           variant="outlined"
@@ -141,58 +176,97 @@ const UserList = () => {
           sx={{ maxWidth: 500, margin: "0 auto", display: "block" }}
         />
         <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleOpenForm()}
-        sx={{ marginBottom: 2 }}
-      >
-        Add User
-      </Button>
-      <UserForm
-        open={openForm}
-        handleClose={() => setOpenForm(false)}
-        handleSave={handleSaveUser}
-        initialData={selectedUser}
-        isEditing={isEditing}
-      />
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpenForm()}
+          sx={{ marginBottom: 2 }}
+        >
+          Add User
+        </Button>
+        <UserForm
+          open={openForm}
+          handleClose={() => setOpenForm(false)}
+          handleSave={handleSaveUser}
+          initialData={selectedUser}
+          isEditing={isEditing}
+        />
       </Box>
 
-      <TableContainer component={Paper} elevation={3} sx={{ maxHeight: 400 }}>
+      <TableContainer component={Paper} elevation={3}>
         <Table stickyHeader>
-          <TableHead
-            sx={{
-              background: "lightblue",
-              "& .MuiTableCell-root": {
-                color: "black",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                textTransform: "uppercase",
-              },
-            }}
-          >
+          <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Age</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell onClick={() => handleSort("id")}>
+                ID{" "}
+                {sortConfig.key === "id" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ArrowUpwardIcon />
+                  ) : (
+                    <ArrowDownwardIcon />
+                  ))}
+              </TableCell>
+              <TableCell onClick={() => handleSort("firstName")}>
+                First Name{" "}
+                {sortConfig.key === "firstName" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ArrowUpwardIcon />
+                  ) : (
+                    <ArrowDownwardIcon />
+                  ))}
+              </TableCell>
+              <TableCell onClick={() => handleSort("lastName")}>
+                Last Name{" "}
+                {sortConfig.key === "lastName" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ArrowUpwardIcon />
+                  ) : (
+                    <ArrowDownwardIcon />
+                  ))}
+              </TableCell>
+              <TableCell onClick={() => handleSort("age")}>
+                Age{" "}
+                {sortConfig.key === "age" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ArrowUpwardIcon />
+                  ) : (
+                    <ArrowDownwardIcon />
+                  ))}
+              </TableCell>
+              <TableCell onClick={() => handleSort("email")}>
+                Email{" "}
+                {sortConfig.key === "email" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ArrowUpwardIcon />
+                  ) : (
+                    <ArrowDownwardIcon />
+                  ))}
+              </TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {paginatedUsers.map((user, index) => renderRow(user, index))}
+            {paginatedUsers.length > 0 ? (
+              paginatedUsers.map((user, index) => renderRow(user, index))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  No records found.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
       <TablePagination
-        rowsPerPageOptions={[5]}
+        rowsPerPageOptions={[5, 10, 15, 20, 25]}
         component="div"
-        count={handleSearch.length}
+        count={sortedUsers.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
 
       <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
@@ -250,10 +324,6 @@ const UserList = () => {
                     variant="outlined"
                     value={selectedUser?.firstName}
                     disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" },
-                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -268,10 +338,6 @@ const UserList = () => {
                     variant="outlined"
                     value={selectedUser?.lastName}
                     disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" }, // Non-editable style
-                    }}
                   />
                 </Grid>
 
@@ -287,10 +353,6 @@ const UserList = () => {
                     variant="outlined"
                     value={selectedUser?.email}
                     disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" },
-                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -305,10 +367,6 @@ const UserList = () => {
                     variant="outlined"
                     value={selectedUser?.age}
                     disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" },
-                    }}
                   />
                 </Grid>
 
@@ -324,10 +382,6 @@ const UserList = () => {
                     variant="outlined"
                     value={selectedUser?.gender}
                     disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" },
-                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -342,10 +396,6 @@ const UserList = () => {
                     variant="outlined"
                     value={selectedUser?.country}
                     disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" },
-                    }}
                   />
                 </Grid>
 
@@ -361,31 +411,23 @@ const UserList = () => {
                     variant="outlined"
                     value={selectedUser?.address}
                     disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" },
-                    }}
                   />
                 </Grid>
               </Grid>
               <Typography
-                    variant="body1"
-                    sx={{ fontSize: "1rem", marginBottom: "5px" }}
-                  >
-                    <strong>Description:</strong>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    multiline
-                    rows={4}
-                    value={selectedUser?.description}
-                    disabled
-                    InputProps={{
-                      readOnly: true,
-                      style: { backgroundColor: "#e0e0e0" },
-                    }}
-                  />
+                variant="body1"
+                sx={{ fontSize: "1rem", marginBottom: "5px" }}
+              >
+                <strong>Description:</strong>
+              </Typography>
+              <TextField
+                fullWidth
+                variant="outlined"
+                multiline
+                rows={4}
+                value={selectedUser?.description}
+                disabled
+              />
             </Box>
           </Grow>
         </DialogContent>
